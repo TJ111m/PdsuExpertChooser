@@ -1,0 +1,5 @@
+{
+  "name": "PDSUchooser",
+  "description": "一个用于管理专家信息、进行项目专家随机抽取、记录和查询抽取结果的综合性管理系统。适用于学校内部招标、验收、评审等各类需要专家参与的项目。",
+  "requestFramePermissions": []
+}

@@ -64,7 +64,7 @@ export const SystemManagementView: React.FC = () => {
     ];
 
     if(isLoading) {
-        return <div className="p-4 text-center">加载日志中...</div>
+        return <div className="p-4 text-center">加载日志中..</div>
     }
     
     return (

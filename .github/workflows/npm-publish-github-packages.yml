@@ -26,6 +26,8 @@ jobs:
           node-version: 20
           registry-url: 'https://registry.npmjs.org' # 指向官方 npm 仓库
 
+      - run: npm install
+      
       # 第三步：安装依赖。此时 NODE_AUTH_TOKEN 需要是你的 npm 令牌
       - name: Install dependencies
         run: npm ci

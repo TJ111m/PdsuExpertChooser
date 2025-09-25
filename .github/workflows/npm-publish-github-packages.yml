@@ -1,3 +1,4 @@
+
 # This workflow will run tests using node and then publish a package to GitHub Packages when a release is created
 # For more information see: https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
 
@@ -8,30 +9,40 @@ on:
     types: [created]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - run: npm install
-      - run: npm ci
-
-  publish-gpr:
-    needs: build
+  build-and-publish:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      # 第一步：检出代码
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 第二步：设置 Node.js 环境并认证到 npmjs.org 以便安装私有依赖
+      - name: Setup Node.js for npmjs.org
+        uses: actions/setup-node@v4
         with:
           node-version: 20
-          registry-url: https://npm.pkg.github.com/
-      - run: npm install
-      - run: npm ci
-      - run: npm publish
+          registry-url: 'https://registry.npmjs.org' # 指向官方 npm 仓库
+
+      # 第三步：安装依赖。此时 NODE_AUTH_TOKEN 需要是你的 npm 令牌
+      - name: Install dependencies
+        run: npm ci
         env:
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          # 使用你存储在 GitHub Secrets 中的 NPM_TOKEN
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # 第五步：重新设置 Node.js 环境，这次是为了发布到 GitHub Packages
+      - name: Setup Node.js for GitHub Packages
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: 'https://npm.pkg.github.com' # 指向 GitHub Packages
+
+      # 第六步：发布到 GitHub Packages。此时 NODE_AUTH_TOKEN 必须是 GITHUB_TOKEN
+      - name: Publish to GitHub Packages
+        run: npm publish
+        env:
+          # 使用 GitHub Actions 自动生成的 GITHUB_TOKEN
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
